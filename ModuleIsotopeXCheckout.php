@@ -80,8 +80,10 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 	 */
 	protected function compile()
 	{
+		//*****************ADDED IN JAVASCRIPT************************//
 		$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/isotope_xcheckout/html/xcheckout.js'; 
-	
+		//*****************ADDED IN JAVASCRIPT************************//
+		
 		// Order has been completed (postsale request)
 		if ($this->strCurrentStep == 'complete' && $this->Input->get('uid') != '')
 		{
@@ -155,12 +157,16 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		// Remove shipping step if no items are shipped
 		if (!$this->Isotope->Cart->requiresShipping)
 		{
+			//*****************ADDED IN SPECIFIC ARRAY INDEX************************//
 			unset($GLOBALS['ISO_CHECKOUT_STEPS']['address_shipping'][2]);
+			//*****************ADDED IN SPECIFIC ARRAY INDEX************************//
 
 			// Remove payment step if items are free of charge. We need to do this here because shipping might have a price.
 			if (!$this->Isotope->Cart->requiresPayment)
 			{
+				//*****************ADDED IN SPECIFIC ARRAY INDEX************************//
 				unset($GLOBALS['ISO_CHECKOUT_STEPS']['review_payment'][1]);
+				//*****************ADDED IN SPECIFIC ARRAY INDEX************************//
 			}
 		}
 
@@ -315,8 +321,9 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		}
 
 		// Valid input data, redirect to next step
+		//*****************ADDED IN CHECK FOR AJAX************************//
 		elseif ($this->Input->post('FORM_SUBMIT') == $this->strFormId && !$this->doNotSubmit && !$this->isAjax)
-		{
+		{ //*****************ADDED IN CHECK FOR AJAX************************//
 			$this->redirectToNextStep();
 		}
 		
@@ -324,8 +331,9 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		
 		global $objPage;
 		
+		//*****************ADDED IN MOOTOOLS JS************************//
 		$GLOBALS['TL_MOOTOOLS'][] = $startScript."\nwindow.addEvent('domready', function(event) { new IsotopeXcheckout('" . $this->id . "', '". $this->strCurrentStep ."', {params: '".$strParams."', language: '" . $GLOBALS['TL_LANGUAGE'] . "', page: '" . $objPage->id . "', mode: '".(TL_MODE=='FE' ? 'FE' : 'BE')."'});});\n".$endScript;
-		
+		//*****************ADDED IN MOOTOOLS JS************************//
 	}
 	
 	
@@ -340,8 +348,11 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		$this->generate();
 			
 		return array(
-			array('type'=>'shipping_method', 'html' => $this->getShippingModulesInterface()),
-			array('type'=>'payment_method', 'html' => $this->getPaymentModulesInterface())
+			'lock'=> $this->doNotSubmit, 
+			'methods'=> array(
+				array('type'=>'shipping_method', 'html' => $this->getShippingModulesInterface()),
+				array('type'=>'payment_method', 'html' => $this->getPaymentModulesInterface())
+			),
 		);
 	}
 
@@ -378,7 +389,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 
 	/**
 	 * Generate the current step widgets.
-	 * Overwrite the parent method to add in a username/password entry on billing address step
+	 * Overwrite the parent method to add in a password entry on billing address step
 	 *
 	 * @param string
 	 * @param integer
@@ -386,8 +397,134 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 	 */
 	protected function generateAddressWidgets($strAddressType, $intOptions)
 	{
-		//Generate default widgets
-		$strBuffer = parent::generateAddressWidgets($strAddressType, $intOptions);
+		//***************************Generate default widgets - PARENT METHOD **************************//
+		$arrWidgets = array();
+
+		$this->loadLanguageFile('tl_iso_addresses');
+		$this->loadDataContainer('tl_iso_addresses');
+
+		$arrFields = ($strAddressType == 'billing_address' ? $this->Isotope->Config->billing_fields : $this->Isotope->Config->shipping_fields);
+		$arrDefault = $this->Isotope->Cart->$strAddressType;
+
+		if ($arrDefault['id'] == -1)
+		{
+			$arrDefault = array();
+		}
+
+		foreach ($arrFields as $field)
+		{
+			$arrData = $GLOBALS['TL_DCA']['tl_iso_addresses']['fields'][$field['value']];
+
+			if (!is_array($arrData) || !$arrData['eval']['feEditable'] || !$field['enabled'] || ($arrData['eval']['membersOnly'] && !FE_USER_LOGGED_IN))
+			{
+				continue;
+			}
+
+			$strClass = $GLOBALS['TL_FFL'][$arrData['inputType']];
+
+			// Continue if the class is not defined
+			if (!$this->classFileExists($strClass))
+			{
+				continue;
+			}
+
+			// Special field "country"
+			if ($field['value'] == 'country')
+			{
+				$arrCountries = ($strAddressType == 'billing_address' ? $this->Isotope->Config->billing_countries : $this->Isotope->Config->shipping_countries);
+				$arrData['options'] = array_values(array_intersect($arrData['options'], $arrCountries));
+				$arrData['default'] = $this->Isotope->Config->country;
+			}
+
+			// Special field type "conditionalselect"
+			elseif (strlen($arrData['eval']['conditionField']))
+			{
+				$arrData['eval']['conditionField'] = $strAddressType . '_' . $arrData['eval']['conditionField'];
+			}
+
+			// Special fields "isDefaultBilling" & "isDefaultShipping"
+			elseif (($field['value'] == 'isDefaultBilling' && $strAddressType == 'billing_address' && $intOptions < 2) || ($field['value'] == 'isDefaultShipping' && $strAddressType == 'shipping_address' && $intOptions < 3))
+			{
+				$arrDefault[$field['value']] = '1';
+			}
+
+			$objWidget = new $strClass($this->prepareForWidget($arrData, $strAddressType . '_' . $field['value'], (strlen($_SESSION['CHECKOUT_DATA'][$strAddressType][$field['value']]) ? $_SESSION['CHECKOUT_DATA'][$strAddressType][$field['value']] : $arrDefault[$field['value']])));
+
+			$objWidget->mandatory = $field['mandatory'] ? true : false;
+			$objWidget->required = $objWidget->mandatory;
+			$objWidget->tableless = $this->tableless;
+			$objWidget->label = $field['label'] ? $this->Isotope->translate($field['label']) : $objWidget->label;
+			$objWidget->storeValues = true;
+
+			// Validate input
+			if ($this->Input->post('FORM_SUBMIT') == $this->strFormId && ($this->Input->post($strAddressType) === '0' || $this->Input->post($strAddressType) == ''))
+			{
+				$objWidget->validate();
+				$varValue = $objWidget->value;
+
+				// Convert date formats into timestamps
+				if (strlen($varValue) && in_array($arrData['eval']['rgxp'], array('date', 'time', 'datim')))
+				{
+					$objDate = new Date($varValue, $GLOBALS['TL_CONFIG'][$arrData['eval']['rgxp'] . 'Format']);
+					$varValue = $objDate->tstamp;
+				}
+
+				// Do not submit if there are errors
+				if ($objWidget->hasErrors())
+				{
+					$this->doNotSubmit = true;
+				}
+
+				// Store current value
+				elseif ($objWidget->submitInput())
+				{
+					$arrAddress[$field['value']] = $varValue;
+				}
+			}
+			elseif ($this->Input->post($strAddressType) === '0' || $this->Input->post($strAddressType) == '')
+			{
+				$this->Input->setPost($objWidget->name, $objWidget->value);
+
+				$objValidator = clone $objWidget;
+				$objValidator->validate();
+
+				if ($objValidator->hasErrors())
+				{
+					$this->doNotSubmit = true;
+				}
+			}
+
+			$arrWidgets[] = $objWidget;
+		}
+		
+		$arrWidgets = IsotopeFrontend::generateRowClass($arrWidgets, 'row', 'rowClass', 0, ISO_CLASS_COUNT|ISO_CLASS_FIRSTLAST|ISO_CLASS_EVENODD);
+
+		// Validate input - **********************CHANGE FROM PARENT METHOD TO PASS & SET CART VALUES ON AJAX SUBMIT *****************************
+		if ($this->Input->post('FORM_SUBMIT') == $this->strFormId && (!$this->doNotSubmit || $this->isAjax) && is_array($arrAddress) && count($arrAddress))
+		{
+			$arrAddress['id'] = 0;
+			$_SESSION['CHECKOUT_DATA'][$strAddressType] = $arrAddress;
+		}
+
+		if (is_array($_SESSION['CHECKOUT_DATA'][$strAddressType]) && $_SESSION['CHECKOUT_DATA'][$strAddressType]['id'] === 0)
+		{
+			$this->Isotope->Cart->$strAddressType = $_SESSION['CHECKOUT_DATA'][$strAddressType];
+		}
+		
+		$strBuffer = '';
+		
+		foreach ($arrWidgets as $objWidget)
+		{
+			$strBuffer .= $objWidget->parse();
+		}
+
+		if (!$this->tableless)
+		{
+			$strBuffer = '<table>'. "\n" . $strBuffer . "\n" .  '</table>';
+		}
+		
+		//***************************END Generate default widgets - PARENT METHOD **************************//
+
 		
 		//Only add to billing
 		if($strAddressType=='billing_address' && $this->iso_checkout_method == 'both' && !FE_USER_LOGGED_IN)
@@ -408,8 +545,8 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 			$objWidget->rowClass = 'row_0 row_first';
 			$objWidget->rowClassConfirm = 'row_1 row_last';	
 				
-			//Process the input
-			if ($this->Input->post('FORM_SUBMIT') == $this->strFormId && strlen($this->Input->post('password')))
+			//Process the input - DO NOT CHECK ON AJAX REQUESTS
+			if ($this->Input->post('FORM_SUBMIT') == $this->strFormId && strlen($this->Input->post('password')) && !$this->isAjax)
 			{
 				$objWidget->validate();
 				$varValue = $objWidget->value;
@@ -439,6 +576,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 				}
 				else
 				{
+					//@todo - Create user on the fly using email address as username
 					$_SESSION['CHECKOUT_DATA']['billing_address']['password'] = $this->Input->post('password');
 				}
 				

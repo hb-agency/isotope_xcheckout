@@ -38,15 +38,15 @@
 <?php echo $this->fields; ?>
 </div>
 <div class="clear">&nbsp;</div>
+<div class="submit_container">
 <?php if ($this->showPrevious || $this->showNext): ?>
-	<div class="submit_container">
 		<?php if ($this->showPrevious): ?><input type="submit" class="submit previous button" name="previousStep" value="<?php echo $this->previousLabel; ?>" /><?php endif; if ($this->showNext): ?>
 		<input type="submit" class="submit <?php echo $this->nextClass; ?> button" name="nextStep" value="<?php echo $this->nextLabel; ?>" /><?php endif; ?>
 	</div>
 <?php else: ?>	
-	<div class="submit_container">
-		<input type="submit" class="submit <?php echo $this->nextClass; ?> button" name="nextStep" value="<?php echo $this->nextLabel; ?>" disabled="true" />
+		<input type="submit" class="submit <?php echo $this->nextClass; ?> button" name="nextStep" value="<?php echo $this->nextLabel; ?>" disabled="disabled" />
 <?php endif; ?>
+</div>
 </form>
 <?php else: ?>
 <?php echo $this->fields; ?>

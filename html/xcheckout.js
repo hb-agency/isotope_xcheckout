@@ -64,23 +64,27 @@ var IsotopeXcheckout = new Class(
 	setEvents: function()
 	{
 		//Billing fields
-		if(this.billingadd)
-		{
-			this.setInputsandSelects(this.billingadd);
-		}
+		if(this.billingadd){this.setInputsandSelects(this.billingadd);}
 		
 		//Shipping fields
-		if(this.shippingadd)
-		{
-			this.setInputsandSelects(this.shippingadd);
-		}
+		if(this.shippingadd){this.setInputsandSelects(this.shippingadd);}
+		
+		//Shipping method
+		if(this.shippingmethod){this.setInputsandSelects(this.shippingmethod);}
+		
+		//Payment method
+		if(this.paymentmethod){this.setInputsandSelects(this.paymentmethod);}
 	},
 	
 	setInputsandSelects: function(field)
 	{
-		var inputs = field.getElements('input');
+		var inputs = field.getElements('input[type="text"]');
 		inputs.each(function(input){
 			input.addEvent('blur', function(){ this.sendAndRefresh(); }.bind(this));
+		}.bind(this));
+		var radios = field.getElements('input[type="radio"]');
+		radios.each(function(radio){
+			radio.addEvent('click', function(){ this.sendAndRefresh(); }.bind(this));
 		}.bind(this));
 		var selects = field.getElements('select');
 		selects.each(function(select){
@@ -104,9 +108,7 @@ var IsotopeXcheckout = new Class(
 				this.fadeIn(json.content);
 				
 			}.bind(this),
-			onFailure: function()
-			{
-			}.bind(this)
+			onFailure: function(){}.bind(this)
 		});
 		
 	},
@@ -116,9 +118,12 @@ var IsotopeXcheckout = new Class(
 		this.container.send();
 	},
 	
-	fadeIn: function(content)
+	fadeIn: function(response)
 	{
-		content.each( function(method)
+		var lock = response.lock;
+		var methods = response.methods;
+				
+		methods.each( function(method)
 		{
 			if(method.type=='shipping_method' && this.shippingmethod)
 			{
@@ -129,6 +134,19 @@ var IsotopeXcheckout = new Class(
 				this.paymentmethod.set('html', method.html);;
 			}
 		}.bind(this));
+		
+		//Unlock the jump to next step
+		if(lock!='1')
+		{
+			var buttons = this.container.getElements('input.submit.next');
+			buttons.each(function(btn){ btn.removeProperty('disabled'); });
+		}
+		else
+		{
+			var buttons = this.container.getElements('input.submit.next');
+			buttons.each(function(btn){ btn.setProperty('disabled', 'disabled'); });
+		}
+		
 	}
 	
 });
