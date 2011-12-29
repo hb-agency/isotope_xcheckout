@@ -353,7 +353,8 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 			'lock'=> $this->doNotSubmit, 
 			'methods'=> array(
 				array('type'=>'shipping_method', 'html' => $this->getShippingModulesInterface()),
-				array('type'=>'payment_method', 'html' => $this->getPaymentModulesInterface())
+				array('type'=>'payment_method', 'html' => $this->getPaymentModulesInterface()),
+				array('type'=>'order_review', 'html' => $this->getOrderReviewInterface()),
 			),
 		);
 	}
@@ -405,7 +406,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 
 		return array
 		(
-			'billing_address' => array
+			'billing_address_review' => array
 			(
 				'headline'	=> ($blnRequiresPayment ? ($this->Isotope->Cart->shippingAddress['id'] == -1 ? $GLOBALS['TL_LANG']['ISO']['billing_shipping_address'] : $GLOBALS['TL_LANG']['ISO']['billing_address']) : (($this->Isotope->Cart->hasShipping && $this->Isotope->Cart->shippingAddress['id'] == -1) ? $GLOBALS['TL_LANG']['ISO']['shipping_address'] : $GLOBALS['TL_LANG']['ISO']['customer_address'])),
 				'info'		=> $this->Isotope->generateAddressString($this->Isotope->Cart->billingAddress, $this->Isotope->Config->billing_fields),
@@ -416,7 +417,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 	
 	/**
 	 * Generate shipping address interface and return it as HTML string
-	 * Overriding parent method only on the review stage
+	 * Overriding parent method only on the review stage to change link and class
 	 * @param boolean
 	 * @return string
 	 */
@@ -434,7 +435,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 
 		return array
 		(
-			'shipping_address' => array
+			'shipping_address_review' => array
 			(
 				'headline'	=> $GLOBALS['TL_LANG']['ISO']['shipping_address'],
 				'info'		=> $this->Isotope->generateAddressString($this->Isotope->Cart->shippingAddress, $this->Isotope->Config->shipping_fields),
@@ -464,7 +465,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 
 		return array
 		(
-			'shipping_method' => array
+			'shipping_method_review' => array
 			(
 				'headline'	=> $GLOBALS['TL_LANG']['ISO']['shipping_method'],
 				'info'		=> $this->Isotope->Cart->Shipping->checkoutReview(),
@@ -495,7 +496,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 
 		return array
 		(
-			'payment_method' => array
+			'payment_method_review' => array
 			(
 				'headline'	=> $GLOBALS['TL_LANG']['ISO']['payment_method'],
 				'info'		=> $this->Isotope->Cart->Payment->checkoutReview(),

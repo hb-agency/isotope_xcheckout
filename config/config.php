@@ -46,9 +46,9 @@ $GLOBALS['ISO_CHECKOUT_STEPS'] = array
 	),
 	'review_payment' => array
 	(
+		array('ModuleIsotopeCheckout', 'getPaymentModulesInterface'),
 		array('ModuleIsotopeCheckout', 'getOrderReviewInterface'),
 		array('ModuleIsotopeCheckout', 'getOrderConditionsInterface'),
-		array('ModuleIsotopeCheckout', 'getPaymentModulesInterface'),
 	)
 );
 

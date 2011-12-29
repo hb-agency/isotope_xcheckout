@@ -43,11 +43,14 @@ var IsotopeXcheckout = new Class(
 		this.step = step;
 		this.container = document.id('iso_mod_checkout_'+this.step);
 		
-		//Find methods
+		//Find methods & review
+		var review = this.container.getElement('div.order_review');
+		this.reviewblock = review ? review : false;
 		var shipmethod = this.container.getElement('div.shipping_method');
 		this.shippingmethod = shipmethod ? shipmethod : false;
 		var paymethod = this.container.getElement('div.payment_method');
 		this.paymentmethod = paymethod ? paymethod : false;
+		
 				
 		//Find address fields
 		var billadd = this.container.getElement('#billing_address');
@@ -135,6 +138,12 @@ var IsotopeXcheckout = new Class(
 				var newEl = new Element('div').set('html', method.html).getFirst('div');
 				this.paymentmethod.empty();
 				this.paymentmethod.set('html', newEl.get('html'));
+			}
+			else if(method.type=='order_review' && this.reviewblock)
+			{
+				var newEl = new Element('div').set('html', method.html).getFirst('div');
+				this.reviewblock.empty();
+				this.reviewblock.set('html', newEl.get('html'));
 			}
 		}.bind(this));
 		
