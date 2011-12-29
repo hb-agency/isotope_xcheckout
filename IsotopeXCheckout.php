@@ -148,7 +148,7 @@ class IsotopeXCheckout extends Frontend
 		
 		
 		//******** SET PASSWORD**********
-		if(isset($_SESSION['CREATE_MEMBER'])
+		if(isset($_SESSION['CREATE_MEMBER']))
 		{
 			$arrData['password'] = $this->Encryption->decrypt($_SESSION['CREATE_MEMBER']);
 			unset($_SESSION['CREATE_MEMBER']);
