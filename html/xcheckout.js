@@ -104,9 +104,8 @@ var IsotopeXcheckout = new Class(
 				// Update request token
 				REQUEST_TOKEN = json.token;
 				document.getElements('input[type="hidden"][name="REQUEST_TOKEN"]').set('value', json.token);
-				
+				//Replace content
 				this.fadeIn(json.content);
-				
 			}.bind(this),
 			onFailure: function(){}.bind(this)
 		});
@@ -127,15 +126,19 @@ var IsotopeXcheckout = new Class(
 		{
 			if(method.type=='shipping_method' && this.shippingmethod)
 			{
-				this.shippingmethod.set('html', method.html);
+				var newEl = new Element('div').set('html', method.html).getFirst('div');
+				this.shippingmethod.empty();
+				this.shippingmethod.set('html', newEl.get('html'));
 			}
 			else if(method.type=='payment_method' && this.paymentmethod)
 			{
-				this.paymentmethod.set('html', method.html);;
+				var newEl = new Element('div').set('html', method.html).getFirst('div');
+				this.paymentmethod.empty();
+				this.paymentmethod.set('html', newEl.get('html'));
 			}
 		}.bind(this));
 		
-		//Unlock the jump to next step
+		//Unlock the continue to next step
 		if(lock!='1')
 		{
 			var buttons = this.container.getElements('input.submit.next');
@@ -147,6 +150,7 @@ var IsotopeXcheckout = new Class(
 			buttons.each(function(btn){ btn.setProperty('disabled', 'disabled'); });
 		}
 		
+		this.setEvents();
 	}
 	
 });

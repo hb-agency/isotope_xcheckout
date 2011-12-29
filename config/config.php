@@ -51,3 +51,13 @@ $GLOBALS['ISO_CHECKOUT_STEPS'] = array
 		array('ModuleIsotopeCheckout', 'getPaymentModulesInterface'),
 	)
 );
+
+
+/**
+ * Hooks
+ */
+$GLOBALS['TL_HOOKS']['iso_writeOrder'][] = array('IsotopeXCheckout', 'triggerAction');	// Isotope 0.2
+$GLOBALS['ISO_HOOKS']['preCheckout'][] = array('IsotopeXCheckout', 'triggerAction');	// Isotope 1.3+
+ 
+ 
+?>

@@ -142,7 +142,6 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		}
 
 		// Default template settings. Must be set at beginning so they can be overwritten later (eg. trough callback)
-		$this->Template->login = $this->getLoginInterface();
 		$this->Template->action = ampersand($this->Environment->request, ENCODE_AMPERSANDS);
 		$this->Template->formId = $this->strFormId;
 		$this->Template->formSubmit = $this->strFormId;
@@ -304,6 +303,9 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		// Hide back buttons it this is the first step
 		if (array_search($this->strCurrentStep, $arrStepKeys) === 0)
 		{
+			//*****************ADD IN LOGIN IF THIS IS THE FIRST STEP & USER NOT LOGGED IN************************//
+			$this->Template->login = !FE_USER_LOGGED_IN ? $this->getLoginInterface() : '';
+			//*****************ADD IN LOGIN IF THIS IS THE FIRST STEP & USER NOT LOGGED IN************************//
 			$this->Template->showPrevious = false;
 		}
 
@@ -384,6 +386,123 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		}
 		
 		return $objTemplate->parse();
+	}
+	
+	
+	/**
+	 * Generate billing address interface and return it as HTML string
+	 * Overriding parent method only on the review stage
+	 * @param boolean
+	 * @return string
+	 */
+	protected function getBillingAddressInterface($blnReview=false)
+	{
+		if(!$blnReview)
+			return parent::getBillingAddressInterface($blnReview);
+			
+		$blnRequiresPayment = $this->Isotope->Cart->requiresPayment;
+		$strStep = 'step=' . $this->getStepURL(__FUNCTION__);
+
+		return array
+		(
+			'billing_address' => array
+			(
+				'headline'	=> ($blnRequiresPayment ? ($this->Isotope->Cart->shippingAddress['id'] == -1 ? $GLOBALS['TL_LANG']['ISO']['billing_shipping_address'] : $GLOBALS['TL_LANG']['ISO']['billing_address']) : (($this->Isotope->Cart->hasShipping && $this->Isotope->Cart->shippingAddress['id'] == -1) ? $GLOBALS['TL_LANG']['ISO']['shipping_address'] : $GLOBALS['TL_LANG']['ISO']['customer_address'])),
+				'info'		=> $this->Isotope->generateAddressString($this->Isotope->Cart->billingAddress, $this->Isotope->Config->billing_fields),
+				'edit'		=> $this->addToUrl($strStep, true),
+			),
+		);
+	}
+	
+	/**
+	 * Generate shipping address interface and return it as HTML string
+	 * Overriding parent method only on the review stage
+	 * @param boolean
+	 * @return string
+	 */
+	protected function getShippingAddressInterface($blnReview=false)
+	{
+		if(!$blnReview)
+			return parent::getShippingAddressInterface($blnReview);
+			
+		if ($this->Isotope->Cart->shippingAddress['id'] == -1)
+		{
+			return false;
+		}
+			
+		$strStep = 'step=' . $this->getStepURL(__FUNCTION__);
+
+		return array
+		(
+			'shipping_address' => array
+			(
+				'headline'	=> $GLOBALS['TL_LANG']['ISO']['shipping_address'],
+				'info'		=> $this->Isotope->generateAddressString($this->Isotope->Cart->shippingAddress, $this->Isotope->Config->shipping_fields),
+				'edit'		=> $this->addToUrl($strStep, true),
+			),
+		);
+	}
+	
+	
+	/**
+	 * Generate shipping modules interface and return it as HTML string
+	 * Overriding parent method only on the review stage
+	 * @param boolean
+	 * @return string
+	 */
+	protected function getShippingModulesInterface($blnReview=false)
+	{
+		if(!$blnReview)
+			return parent::getShippingModulesInterface($blnReview);
+			
+		if (!$this->Isotope->Cart->hasShipping)
+		{
+			return false;
+		}
+			
+		$strStep = 'step=' . $this->getStepURL(__FUNCTION__);
+
+		return array
+		(
+			'shipping_method' => array
+			(
+				'headline'	=> $GLOBALS['TL_LANG']['ISO']['shipping_method'],
+				'info'		=> $this->Isotope->Cart->Shipping->checkoutReview(),
+				'note'		=> $this->Isotope->Cart->Shipping->note,
+				'edit'		=> $this->addToUrl($strStep, true),
+			),
+		);
+	}
+	
+	
+	/**
+	 * Generate shipping modules interface and return it as HTML string
+	 * Overriding parent method only on the review stage
+	 * @param boolean
+	 * @return string
+	 */
+	protected function getPaymentModulesInterface($blnReview=false)
+	{
+		if(!$blnReview)
+			return parent::getPaymentModulesInterface($blnReview);
+			
+		if (!$this->Isotope->Cart->hasPayment)
+		{
+			return false;
+		}
+			
+		$strStep = 'step=' . $this->getStepURL(__FUNCTION__);
+
+		return array
+		(
+			'payment_method' => array
+			(
+				'headline'	=> $GLOBALS['TL_LANG']['ISO']['payment_method'],
+				'info'		=> $this->Isotope->Cart->Payment->checkoutReview(),
+				'note'		=> $this->Isotope->Cart->Payment->note,
+				'edit'		=> $this->addToUrl($strStep, true),
+			),
+		);
 	}
 
 
@@ -526,8 +645,9 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		//***************************END Generate default widgets - PARENT METHOD **************************//
 
 		
-		//Only add to billing
-		if($strAddressType=='billing_address' && $this->iso_checkout_method == 'both' && !FE_USER_LOGGED_IN)
+		//Only add to billing fields and if the checkout method is "both" or "guests"
+		//NOTE: Once the guest option is working on IsotopeMember we can take this out (hopefully)
+		if($strAddressType=='billing_address' && ($this->iso_checkout_method == 'both' || $this->iso_checkout_method == 'guest') && !FE_USER_LOGGED_IN)
 		{			
 			$objTemplate = new IsotopeTemplate('iso_checkout_register');
 			$objTemplate->message = $GLOBALS['TL_LANG']['MSC']['registerMessage'];
@@ -545,12 +665,12 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 			$objWidget->rowClass = 'row_0 row_first';
 			$objWidget->rowClassConfirm = 'row_1 row_last';	
 				
-			//Process the input - DO NOT CHECK ON AJAX REQUESTS
-			if ($this->Input->post('FORM_SUBMIT') == $this->strFormId && strlen($this->Input->post('password')) && !$this->isAjax)
+			//Process the input - DO NOT CHECK ON AJAX REQUESTS OR IF doNotSubmit is TRUE
+			if ($this->Input->post('FORM_SUBMIT') == $this->strFormId && strlen($this->Input->post('password')) && !$this->doNotSubmit && !$this->isAjax)
 			{
 				$objWidget->validate();
 				$varValue = $objWidget->value;
-
+				
 				// Check whether the password matches the username
 				if ($this->Input->post('password') == $this->Input->post('billing_address_email'))
 				{
@@ -576,8 +696,9 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 				}
 				else
 				{
-					//@todo - Create user on the fly using email address as username
-					$_SESSION['CHECKOUT_DATA']['billing_address']['password'] = $this->Input->post('password');
+					//Encrypt & save the hashed password in the session so we can set it later in the Create_member Hook
+					$this->import('Encryption');
+					$_SESSION['CREATE_MEMBER'] = $this->Encryption->encrypt($varValue);
 				}
 				
 			}
@@ -591,7 +712,32 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		
 		return $strBuffer;
 	}
-
-
+	
+	
+	/**
+	 * Get the correct step key for the method being accessed om the review stage
+	 * @param string
+	 * @return string
+	 */
+	 protected function getStepURL($strMethod)
+	 {
+	 	
+	 	foreach($GLOBALS['ISO_CHECKOUT_STEPS'] as $step=>$arrMethods)
+	 	{
+	 		foreach($arrMethods as $arrMethod)
+	 		{
+	 			if($arrMethod[1]==$strMethod)
+	 			{
+	 				return $step;
+	 			}
+	 		}
+	 		
+	 	}
+	 	
+	 	//nothing found… return first step
+	 	$arrSteps = array_keys($GLOBALS['ISO_CHECKOUT_STEPS']);
+	 	return $arrSteps[0];
+	 
+	 }
 
 }
