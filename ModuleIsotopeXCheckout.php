@@ -704,7 +704,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 				
 			}
 						
-			$strFields .= $this->tableless ? $objPassWidget->parse() : '<table>' . "\n" . $objWidget->parse() . '</table>';
+			$strFields .= $this->tableless ? $objWidget->parse() : '<table>' . "\n" . $objWidget->parse() . '</table>';
 			
 			$objTemplate->fields = $strFields;
 			
