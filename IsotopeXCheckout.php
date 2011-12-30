@@ -36,6 +36,7 @@ class IsotopeXCheckout extends Frontend
 	 */
 	public function __construct()
 	{
+		parent::__construct();
 		$this->import('Isotope');
 		$this->import('Encryption');
 	}
