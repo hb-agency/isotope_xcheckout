@@ -1,0 +1,6 @@
+<section id="tl_login_checkout">
+<h2><?php echo $this->headline; ?></h2>
+<p class="message"><?php echo $this->message; ?></p>
+<?php echo $this->login; ?>
+<div class="clear"></div>
+</section>
