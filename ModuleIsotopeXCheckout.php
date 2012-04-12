@@ -36,13 +36,6 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 	 * @var string
 	 */
 	protected $strTemplate = 'mod_iso_xcheckout';
-
-
-	/**
-	 * Form ID
-	 * @var string
-	 */
-	protected $strFormId = 'iso_mod_checkout_payment';
 	
 	/**
 	 * Ajax
@@ -135,7 +128,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 			$this->Template->message = 'User checkout not allowed';
 			return;
 		}
-
+		
 		if (!$this->iso_forward_review && !strlen($this->Input->get('step')))
 		{
 			$this->redirectToNextStep();
@@ -168,7 +161,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 				//*****************ADDED IN SPECIFIC ARRAY INDEX************************//
 			}
 		}
-
+		
 		if ($this->strCurrentStep == 'failed')
 		{
 			$this->Database->prepare("UPDATE tl_iso_orders SET status='on_hold' WHERE cart_id=?")->execute($this->Isotope->Cart->id);
@@ -209,7 +202,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 					$this->redirect($this->addToUrl('step=' . $step, true));
 				}
 			}
-
+			
 			if ($step == $this->strCurrentStep)
 			{
 				break;
@@ -219,7 +212,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		if ($this->strCurrentStep == 'process')
 		{
 			$this->writeOrder();
-			$strBuffer = $this->Isotope->Cart->hasPayment ? $this->Isotope->Cart->Payment->checkoutForm() : false;
+			$strBuffer = $this->Isotope->Cart->hasPayment ? $this->Isotope->Cart->Payment->checkoutForm($this) : false;
 
 			if ($strBuffer === false)
 			{
@@ -232,8 +225,10 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 
 		if ($this->strCurrentStep == 'complete')
 		{
-			$strBuffer = $this->Isotope->Cart->hasPayment ? $this->Isotope->Cart->Payment->processPayment() : true;
-
+			//*****************ADDED IN PASSING OF MODULE TO PROCESSPAYMENT************************//
+			$strBuffer = $this->Isotope->Cart->hasPayment ? $this->Isotope->Cart->Payment->processPayment($this) : true;
+			//*****************ADDED IN PASSING OF MODULE TO PROCESSPAYMENT************************//
+			
 			if ($strBuffer === true)
 			{
 				unset($_SESSION['FORM_DATA']);
@@ -268,12 +263,13 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 		{
 			$this->strCurrentStep = $step;
 		}
-
+		
 		// Show checkout steps
 		$arrStepKeys = array_keys($GLOBALS['ISO_CHECKOUT_STEPS']);
 		$blnPassed = true;
 		$total = count($arrStepKeys) - 1;
 		$arrSteps = array();
+		$strCurrent = '';
 		
 		if ($this->strCurrentStep != 'process' && $this->strCurrentStep != 'complete')
 		{
@@ -282,6 +278,7 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 				if ($this->strCurrentStep == $step)
 				{
 					$blnPassed = false;
+					$this->Template->previousLink = $strCurrent;
 				}
 	
 				$blnActive = $this->strCurrentStep == $step ? true : false;
@@ -294,6 +291,8 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 					'href'		=> ($blnPassed ? $this->addToUrl('step=' . $step, true) : ''),
 					'title'		=> specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['checkboutStepBack'], (strlen($GLOBALS['TL_LANG']['ISO']['checkout_' . $step]) ? $GLOBALS['TL_LANG']['ISO']['checkout_' . $step] : $step))),
 				);
+				
+				$strCurrent = $this->addToUrl('step=' . $step, true);
 			}
 		}
 		
@@ -315,13 +314,13 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 			$this->Template->nextClass = 'confirm';
 			$this->Template->nextLabel = specialchars($GLOBALS['TL_LANG']['MSC']['confirmOrder']);
 		}
-
+		
 		// User pressed "back" button
 		if (strlen($this->Input->post('previousStep')))
 		{
 			$this->redirectToPreviousStep();
 		}
-
+		
 		// Valid input data, redirect to next step
 		//*****************ADDED IN CHECK FOR AJAX************************//
 		elseif ($this->Input->post('FORM_SUBMIT') == $this->strFormId && !$this->doNotSubmit && !$this->isAjax)
@@ -568,7 +567,9 @@ class ModuleIsotopeXCheckout extends ModuleIsotopeCheckout
 				$arrDefault[$field['value']] = '1';
 			}
 
-			$objWidget = new $strClass($this->prepareForWidget($arrData, $strAddressType . '_' . $field['value'], (strlen($_SESSION['CHECKOUT_DATA'][$strAddressType][$field['value']]) ? $_SESSION['CHECKOUT_DATA'][$strAddressType][$field['value']] : $arrDefault[$field['value']])));
+			/******  FIX FOR DEFAULT COUNTRY *****/
+			//$objWidget = new $strClass($this->prepareForWidget($arrData, $strAddressType . '_' . $field['value'], (strlen($_SESSION['CHECKOUT_DATA'][$strAddressType][$field['value']]) ? $_SESSION['CHECKOUT_DATA'][$strAddressType][$field['value']] : $arrDefault[$field['value']])));
+			$objWidget = new $strClass($this->prepareForWidget($arrData, $strAddressType . '_' . $field['value'], (strlen($_SESSION['CHECKOUT_DATA'][$strAddressType][$field['value']]) ? $_SESSION['CHECKOUT_DATA'][$strAddressType][$field['value']] : (strlen($arrDefault[$field['value']] == 0 && strlen($arrData['default'])) ? $arrData['default'] : $arrDefault[$field['value']]))));
 
 			$objWidget->mandatory = $field['mandatory'] ? true : false;
 			$objWidget->required = $objWidget->mandatory;
