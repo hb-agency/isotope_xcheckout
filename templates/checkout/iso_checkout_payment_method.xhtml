@@ -1,0 +1,13 @@
+<h2><?php echo $this->headline; ?></h2>
+<p><?php echo $this->message; ?></p>
+
+<?php echo $this->options; ?>
+
+<div class="modules">
+<?php foreach($this->paymentMethods as $objPayment): ?>
+<?php if(method_exists($objPayment, 'paymentForm')): ?>
+	<div class="module">
+	<?php echo $objPayment->paymentForm(); ?>
+	</div>
+<?php endif; endforeach; ?>
+</div>

@@ -1,31 +1,14 @@
-<?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
+<?php
 
 /**
- * Contao Open Source CMS
- * Copyright (C) 2005-2010 Leo Feyer
+ * IsotopeXCheckout for Isotope eCommerce
  *
- * Formerly known as TYPOlight Open Source CMS.
+ * Copyright (C) 2011-2014 HB Agency
  *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at <http://www.gnu.org/licenses/>.
- *
- * PHP version 5
- * @copyright  Winans Creative 2009-2011
- * @author     Blair Winans <blair@winanscreative.com>
+ * @package    IsotopeXCheckout
+ * @link       http://www.hbagency.com
  * @license    http://opensource.org/licenses/lgpl-3.0.html
  */
-
 
 /**
  * Frontend Modules
@@ -35,13 +18,13 @@ $GLOBALS['TL_LANG']['FMD']['iso_xcheckout']	= array('XCheckout', 'Allow store cu
 /**
  * Checkout Steps
  */
-$GLOBALS['TL_LANG']['ISO']['checkout_address_shipping']	= 'Address & Shipping';
-$GLOBALS['TL_LANG']['ISO']['checkout_review_payment'] = 'Review & Payment';
+$GLOBALS['TL_LANG']['MSC']['checkout_address_shipping']	= 'Address & Shipping';
+$GLOBALS['TL_LANG']['MSC']['checkout_review_payment'] = 'Review & Payment';
 
 /**
  * Checkout Step Labels
  */
-$GLOBALS['TL_LANG']['ISO']['login']	= 'Login';
+$GLOBALS['TL_LANG']['MSC']['login']	= 'Login';
 
 /**
  * Miscellaneous
@@ -55,6 +38,5 @@ $GLOBALS['TL_LANG']['MSC']['bothMessage'] = 'Login to your account or checkout a
 
 
 $GLOBALS['TL_LANG']['ERR']['passwordUnique'] = 'Your password cannot be the same as your username/email address. Please select another password.';
-$GLOBALS['TL_LANG']['ERR']['emailUnique'] = 'Your email address is already associated with an account on our system.';
+$GLOBALS['TL_LANG']['ERR']['emailUnique'] = 'Your username or email address is already associated with an account on our system.';
 
-?>

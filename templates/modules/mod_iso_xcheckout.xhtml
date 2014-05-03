@@ -30,7 +30,7 @@
 <?php endif; ?>
 
 <?php if ($this->showForm): ?>
-<form action="<?php echo $this->action; ?>" id="<?php echo $this->formId; ?>" method="post" enctype="<?php echo $this->enctype; ?>">
+<form action="<?php echo $this->action; ?>" id="<?php echo $this->formId; ?>" method="post" enctype="<?php echo $this->enctype; ?>" novalidate="novalidate">
 <div class="formbody">
 <input type="hidden" name="FORM_SUBMIT" value="<?php echo $this->formSubmit; ?>" />
 <input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}" />
@@ -40,7 +40,7 @@
 <div class="clear">&nbsp;</div>
 <div class="submit_container">
 <?php if ($this->showPrevious || $this->showNext): ?>
-		<?php if ($this->showPrevious): ?><a class="submit previous button" href="<?php echo $this->previousLink; ?>"><?php echo $this->previousLabel; ?></a><?php endif; if ($this->showNext): ?>
+		<?php if ($this->showPrevious): ?><input type="submit" class="submit previous button" name="previousStep" value="<?php echo $this->previousLabel; ?>" /><?php endif; if ($this->showNext): ?>
 		<input type="submit" class="submit <?php echo $this->nextClass; ?> button" name="nextStep" value="<?php echo $this->nextLabel; ?>" /><?php endif; ?>
 	</div>
 <?php else: ?>	

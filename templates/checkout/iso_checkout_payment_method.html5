@@ -1,0 +1,14 @@
+<h2><?php echo $this->headline; ?></h2>
+<p><?php echo $this->message; ?></p>
+
+<?php echo $this->options; ?>
+
+<?php if(!empty($this->paymentForms)): ?>
+<div class="paymentForms">
+<?php foreach($this->paymentForms as $strForm): ?>
+	<div class="paymentForm">
+	<?php echo $strForm; ?>
+	</div>
+<?php endforeach; ?>
+</div>
+<?php endif; ?>
