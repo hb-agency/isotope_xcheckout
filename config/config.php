@@ -16,6 +16,11 @@
  */
 $GLOBALS['FE_MOD']['isotope']['iso_xcheckout'] = 'HBAgency\Module\XCheckout';
 
+/**
+ * Hooks
+ */
+$GLOBALS['TL_HOOKS']['ajaxRequest'][] = array('\HBAgency\Hooks\AjaxRequest\LoadXCheckout', 'run');
+
 
 /**
  * Re-arrange step callbacks for checkout module to make 2 full steps
