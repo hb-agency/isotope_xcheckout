@@ -197,7 +197,7 @@ class XCheckout extends IsotopeCheckout
         
 		/******************** CUSTOM ********************/
 		//Generate login
-		if($this->strCurrentStep == 'address_shipping'){
+		if($this->strCurrentStep == 'address_shipping' && $this->iso_checkout_method != 'guest'){
 		    $objLogin = new \HBAgency\CheckoutStep\Login($this);
             $this->Template->login = $objLogin->generate();
 		}
