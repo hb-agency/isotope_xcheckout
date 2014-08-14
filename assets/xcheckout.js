@@ -34,11 +34,11 @@ var IsotopeXCheckout = (function() {
 		form = document.getElementById('iso_mod_checkout_'+step);
 		
 		//Find addresses, methods & review
-		billingadd 			= document.getElementById(step+'_billingaddress');
-		shippingadd 		= document.getElementById(step+'_shippingaddress');
-		shippingmethod 		= document.getElementById(step+'_shippingmethod');
-		paymentmethod 		= document.getElementById(step+'_paymentmethod');
-		orderinfo 			= document.getElementById(step+'_orderinfo');
+		billingadd 			= document.getElementById('address_shipping_billingaddress');
+		shippingadd 		= document.getElementById('address_shipping_shippingaddress');
+		shippingmethod 		= document.getElementById('address_shipping_shippingmethod');
+		paymentmethod 		= document.getElementById('review_payment_paymentmethod');
+		orderinfo 			= document.getElementById('review_payment_orderinfo');
 		
 		//Disable buttons for now
 		buttons = document.getElementsByTagName('input');
@@ -155,7 +155,45 @@ var IsotopeXCheckout = (function() {
 	function checkMandatoryFields(field, runAllInputs)
 	{
 		var valid = true, j, k;
-				
+		
+		/*if (runAllInputs) {
+			var inputs = field.getElementsByTagName('input');
+			if (inputs.length) {
+				for (j in inputs) {
+		        	if((' ' + inputs[j].type + ' ').indexOf(' text ') > -1 && (' ' + inputs[j].className + ' ').indexOf(' mandatory ') > -1 && inputs[j].value.trim().length == 0) {
+			        	console.log(inputs[j]);
+						valid = false;
+					}
+		        	if((' ' + inputs[j].type + ' ').indexOf(' email ') > -1 && (' ' + inputs[j].className + ' ').indexOf(' mandatory ') > -1 && inputs[j].value.trim().length == 0) {
+			        	console.log(inputs[j]);
+						valid = false;
+					}
+		        	if((' ' + inputs[j].type + ' ').indexOf(' tel ') > -1 && (' ' + inputs[j].className + ' ').indexOf(' mandatory ') > -1 && inputs[j].value.trim().length == 0) {
+			        	console.log(inputs[j]);
+						valid = false;
+					}
+				}
+			}
+			
+			var selects = field.getElementsByTagName('select');
+			if (selects.length) {
+				for (k in selects) {
+					if((' ' + selects[k].className + ' ').indexOf(' select ') > -1 && (' ' + selects[k].className + ' ').indexOf(' mandatory ') > -1) {
+						var blnSelected = false;
+						for(var j=0; j < selects[k].options.length; j++){
+				        	console.log(selects[k].options[j]);
+				            if (selects[k].options[j].selected){
+					            blnSelected = true;
+				            }
+				        }
+				        if (!blnSelected) {
+					        valid = false;
+				        }
+			        }
+				}
+			}
+		}*/
+		
 		return valid;
 	}
 
@@ -217,7 +255,7 @@ var IsotopeXCheckout = (function() {
 	        }
 	    };
 
-		url = 'ajax/?mod=xcheckout&action=fmd&page='+config.page+'&id='+config.module+'&step='+config.step;
+		url = 'ajax.php?action=fmd&page='+config.page+'&id='+config.module+'&step='+config.step;
 
     }
     
@@ -240,7 +278,7 @@ var IsotopeXCheckout = (function() {
 	    
 	    if (steps.length) {
 			for (j in steps) {
-	        	if((' ' + steps[j].id + ' ').indexOf(' '+step+'_shippingmethod ') > -1 && shippingmethod) {
+	        	if((' ' + steps[j].id + ' ').indexOf(' address_shipping_shippingmethod ') > -1 && shippingmethod) {
 					shippingmethod.innerHTML = steps[j].html;
 					var ptags = shippingmethod.getElementsByTagName('p');
 					for (var i = 0; i < ptags.length; i++)
@@ -251,10 +289,10 @@ var IsotopeXCheckout = (function() {
 						}
 					}
 				}
-				else if((' ' + steps[j].id + ' ').indexOf(' '+step+'_paymentmethod ') > -1 && paymentmethod) {
+				else if((' ' + steps[j].id + ' ').indexOf(' address_shipping_paymentmethod ') > -1 && paymentmethod) {
 					paymentmethod.innerHTML = steps[j].html;
 				}
-				else if((' ' + steps[j].id + ' ').indexOf(' '+step+'_orderinfo ') > -1 && orderinfo) {
+				else if((' ' + steps[j].id + ' ').indexOf(' review_payment_orderinfo ') > -1 && orderinfo) {
 					orderinfo.innerHTML = steps[j].html;
 				}
 			}
@@ -279,7 +317,7 @@ var IsotopeXCheckout = (function() {
 	        		if(toggleOn !== false && toggleOn != null) {
 		        		buttons[i].removeAttribute('disabled');
 	        		}
-	        		else {
+	        		else if ((' ' + document.body.className + ' ').indexOf(' ie8 ') == -1) {
 		        		buttons[i].setAttribute('disabled', 'disabled');
 	        		}
 				}
