@@ -58,6 +58,11 @@ class XCheckout extends IsotopeCheckout
 
 			return $objTemplate->parse();
 		}
+		
+		if (\Environment::get('isAjaxRequest'))
+		{
+			return $this->generateAjax();
+		}
 
 		return parent::generate();
 	}
