@@ -1,12 +1,12 @@
 <?php
 
 /**
- * IsotopeXCheckout for Isotope eCommerce
+ * Isotope eCommerce for Contao Open Source CMS
  *
- * Copyright (C) 2011-2014 HB Agency
+ * Copyright (C) 2009-2014 terminal42 gmbh & Isotope eCommerce Workgroup
  *
- * @package    IsotopeXCheckout
- * @link       http://www.hbagency.com
+ * @package    Isotope
+ * @link       http://isotopeecommerce.org
  * @license    http://opensource.org/licenses/lgpl-3.0.html
  */
  
@@ -19,13 +19,10 @@ use Isotope\Module\Checkout as IsotopeCheckout;
  * Class XCheckout
  * Adaptation of front end module Isotope "checkout".
  *
- * @copyright  Isotope eCommerce Workgroup 2009-2014
- * @copyright  HB Agency 2014
+ * @copyright  Isotope eCommerce Workgroup 2009-2012
  * @author     Andreas Schempp <andreas.schempp@terminal42.ch>
  * @author     Fred Bliss <fred.bliss@intelligentspark.com>
  * @author     Yanick Witschi <yanick.witschi@terminal42.ch>
- * @author     Blair Winans <bwinans@hbagency.com>
- * @author     Adam Fisher <afisher@hbagency.com>
  */
 class XCheckout extends IsotopeCheckout
 {
@@ -60,11 +57,6 @@ class XCheckout extends IsotopeCheckout
 			$objTemplate->href = $this->Environment->script.'?do=modules&amp;act=edit&amp;id=' . $this->id;
 
 			return $objTemplate->parse();
-		}
-		
-		if(\Environment::get('isAjaxRequest'))
-		{
-    		return $this->generateAjax();
 		}
 
 		return parent::generate();
@@ -202,7 +194,7 @@ class XCheckout extends IsotopeCheckout
         
 		/******************** CUSTOM ********************/
 		//Generate login
-		if($this->strCurrentStep == 'address_shipping' && $this->iso_checkout_method != 'guest'){
+		if($this->strCurrentStep == 'address_shipping'){
 		    $objLogin = new \HBAgency\CheckoutStep\Login($this);
             $this->Template->login = $objLogin->generate();
 		}

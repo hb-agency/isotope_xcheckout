@@ -29,4 +29,4 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_module']['iso_loginModule'] = array('Login module', 'Please select a login module you will use on the checkout page. Be sure to leave the redirect page blank or set it to the checkout module page.');
+$GLOBALS['TL_LANG']['tl_iso_addresses']['memberdiscount'] = array('AIHA Member', 'Please check if you are an AIHA member.');

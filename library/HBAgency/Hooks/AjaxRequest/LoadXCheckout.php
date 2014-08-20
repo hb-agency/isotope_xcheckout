@@ -16,6 +16,8 @@ use HBAgency\AjaxInput;
 
 use Isotope\Isotope;
 
+use Haste\Util\InsertTag as Haste_InsertTag;
+
 /**
  * Load a AJAX requested checkout module
  *
@@ -38,12 +40,10 @@ class LoadXCheckout extends \Frontend
 	            	    
     	    $varValue = \Controller::getFrontendModule(AjaxInput::get('id'));
     	    
-    	    var_dump($varValue); exit;
-    	    
     	    $varValue = json_encode(array
 			(
 				'token'		=> REQUEST_TOKEN,
-				'content'	=> $varValue,
+				'content'	=> Haste_InsertTag::replaceRecursively($varValue),
 			));
 			
 			echo $varValue;
@@ -61,8 +61,8 @@ class LoadXCheckout extends \Frontend
 	    $arrPostVals = array();
 	    
 	    //Get Billing/Shipping Address Fields
-	    $arrBilling = Isotope::getConfig()->getBillingFieldsConfig();
-	    $arrShipping = Isotope::getConfig()->getShippingFieldsConfig();
+	    $arrBilling = Isotope::getConfig()->getBillingFields();
+	    $arrShipping = Isotope::getConfig()->getShippingFields();
 	    foreach($arrBilling as $strField)
 	    {
     	   $arrPostVals[] = 'BillingAddress_' . $strField; 
@@ -88,9 +88,9 @@ class LoadXCheckout extends \Frontend
 	    $arrPostVals[] = 'REQUEST_TOKEN';
         
         // HOOK: Add custom fields
-		if (isset($GLOBALS['TL_HOOKS']['setAjaxGetAndPostVals']) && is_array($GLOBALS['TL_HOOKS']['setAjaxGetAndPostVals']))
+		if (isset($GLOBALS['TL_HOOKS']['setXCheckoutAjaxGetAndPostVals']) && is_array($GLOBALS['TL_HOOKS']['setXCheckoutAjaxGetAndPostVals']))
 		{
-			foreach ($GLOBALS['TL_HOOKS']['setAjaxGetAndPostVals'] as $callback)
+			foreach ($GLOBALS['TL_HOOKS']['setXCheckoutAjaxGetAndPostVals'] as $callback)
 			{
 				$this->import($callback[0]);
 				$this->$callback[0]->$callback[1]($arrGetVals, $arrPostVals);

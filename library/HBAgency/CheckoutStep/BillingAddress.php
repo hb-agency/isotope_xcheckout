@@ -1,12 +1,12 @@
 <?php
 
 /**
- * IsotopeXCheckout for Isotope eCommerce
+ * Isotope eCommerce for Contao Open Source CMS
  *
- * Copyright (C) 2011-2014 HB Agency
+ * Copyright (C) 2009-2014 terminal42 gmbh & Isotope eCommerce Workgroup
  *
- * @package    IsotopeXCheckout
- * @link       http://www.hbagency.com
+ * @package    Isotope
+ * @link       http://isotopeecommerce.org
  * @license    http://opensource.org/licenses/lgpl-3.0.html
  */
 
@@ -123,7 +123,7 @@ class BillingAddress extends IsoBillingAddress implements IsotopeCheckoutStep
                     // Do not submit if there are errors
                     if ($objWidget->hasErrors()) {
                         $blnIsValid = false; //****************CUSTOM!
-                        //$this->blnError = true;
+                        $this->blnError = true;
                     } // Store current value
                     elseif ($objWidget->submitInput()) {
                         $arrAddress[$strName] = $varValue;
@@ -138,7 +138,7 @@ class BillingAddress extends IsoBillingAddress implements IsotopeCheckoutStep
     
                     if ($objValidator->hasErrors()) {
                         $blnIsValid = false; //****************CUSTOM!
-                        //$this->blnError = true;
+                        $this->blnError = true;
                     }
                 }
             //************************ CUSTOM ****************************//

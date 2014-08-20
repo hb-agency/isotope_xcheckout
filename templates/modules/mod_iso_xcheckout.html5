@@ -56,15 +56,15 @@
 window.addEvent('domready', function() {
     document.getElements('.mod_iso_checkout form').addEvent('submit', function() {
         document.getElement('.mod_iso_checkout input[name=nextStep]').set('disabled', true);
-        (function() { window.location.reload() }).delay(30000);
+        //(function() { window.location.reload() }).delay(30000);
     });
     
-    IsotopeXCheckout.attach({module: '<?php echo $this->id; ?>', 
-                         step:'<?php echo $this->step; ?>', 
-                         language: '<?php echo  $GLOBALS['TL_LANGUAGE']; ?>', 
-                         page: '<?php echo $this->pageid; ?>', 
-                         mode: '<?php echo (TL_MODE=='FE' ? 'FE' : 'BE'); ?>'
-                         });
+	    IsotopeXCheckout.attach({module: '<?php echo $this->id; ?>', 
+	                         step:'<?php echo $this->step; ?>', 
+	                         language: '<?php echo  $GLOBALS['TL_LANGUAGE']; ?>', 
+	                         page: '<?php echo $this->pageid; ?>', 
+	                         mode: '<?php echo (TL_MODE=='FE' ? 'FE' : 'BE'); ?>'
+	                         });
 
 });
 </script>
