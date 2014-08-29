@@ -59,13 +59,14 @@ window.addEvent('domready', function() {
         //(function() { window.location.reload() }).delay(30000);
     });
     
+    <?php if (stripos($this->step, 'payment') === false): ?>
 	    IsotopeXCheckout.attach({module: '<?php echo $this->id; ?>', 
 	                         step:'<?php echo $this->step; ?>', 
 	                         language: '<?php echo  $GLOBALS['TL_LANGUAGE']; ?>', 
 	                         page: '<?php echo $this->pageid; ?>', 
 	                         mode: '<?php echo (TL_MODE=='FE' ? 'FE' : 'BE'); ?>'
 	                         });
-
+	<?php endif; ?>
 });
 </script>
 <!-- indexer::continue -->
