@@ -93,24 +93,30 @@ var IsotopeXCheckout = (function() {
 		        	if((' ' + inputs[j].type + ' ').indexOf(' text ') > -1) {	
 						try{
 						  inputs[j].addEventListener('blur', sendAndRefresh );
+						  inputs[j].addEventListener('click', sendAndRefresh );
 						} catch (err){
 						  inputs[j].attachEvent('onblur', sendAndRefresh );
+						  inputs[j].attachEvent('onclick', sendAndRefresh );
 						}
 						//inputs[j].addEventListener('blur', sendAndRefresh );
 					}
 		        	if((' ' + inputs[j].type + ' ').indexOf(' email ') > -1) {
 						try{
 						  inputs[j].addEventListener('blur', sendAndRefresh );
+						  inputs[j].addEventListener('click', sendAndRefresh );
 						} catch (err){
 						  inputs[j].attachEvent('onblur', sendAndRefresh );
+						  inputs[j].attachEvent('onclick', sendAndRefresh );
 						}
 						//inputs[j].addEventListener('blur', sendAndRefresh );
 					}
 		        	if((' ' + inputs[j].type + ' ').indexOf(' tel ') > -1) {
 						try{
 						  inputs[j].addEventListener('blur', sendAndRefresh );
+						  inputs[j].addEventListener('click', sendAndRefresh );
 						} catch (err){
 						  inputs[j].attachEvent('onblur', sendAndRefresh );
+						  inputs[j].attachEvent('onclick', sendAndRefresh );
 						}
 						//inputs[j].addEventListener('blur', sendAndRefresh );
 					}

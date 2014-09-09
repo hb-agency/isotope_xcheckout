@@ -20,7 +20,8 @@ $GLOBALS['FE_MOD']['isotope']['iso_xcheckout'] = 'HBAgency\Module\XCheckout';
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['ajaxRequest'][] = array('\HBAgency\Hooks\AjaxRequest\LoadXCheckout', 'run');
+$GLOBALS['TL_HOOKS']['ajaxRequest'][]		= array('\HBAgency\Hooks\AjaxRequest\LoadXCheckout', 'run');
+$GLOBALS['ISO_HOOKS']['postCheckout'][]		= array('\HBAgency\Hooks\PostCheckout\CreateMember', 'run');
 
 
 /**

@@ -11,7 +11,7 @@ General Usage
 Changelog
 ---------
 
-* v1.0.0 -- 05/03/2014 - Contao 3 and Isotope 2 compatible
+* v0.1.5 -- 02/06/2014 - Isotope 2.0 Updates
 * v0.1.4 -- 12/30/2011 - Added in HTML5 templates.
 * v0.1.3 -- 12/29/2011 - Working version. Added AJAX update of review screen.
 * v0.1.2 -- 12/29/2011 - Added in member password generation with a supplement for the missing "guest" option in isotope_member, also fixes for review stage
