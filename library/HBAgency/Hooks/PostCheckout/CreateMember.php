@@ -66,7 +66,7 @@ class CreateMember extends \Frontend
 				//Check whether the username/email exists
 				$m = \MemberModel::getTable();
                 $objUnique = \MemberModel::findOneBy(array("LCASE($m.username)=LCASE(?) OR LCASE($m.email)=LCASE(?)"), array($strUsername, $strUsername));
-                $strUsername = $objUnique === null ? $strUsername : 'user'.rand(1000, 9999).$strUsername;
+                $strUsername = $objUnique === null ? $strUsername : 'id'.rand(1000, 9999).$strUsername;
                 
 				$objMember->username = $strUsername;
 				$objMember->password = \Encryption::encrypt($this->createRandomPassword());
@@ -87,7 +87,7 @@ class CreateMember extends \Frontend
 			$objMember->phone				= strval($arrBillingAddress['phone']);
 			$objMember->mobile				= strval($arrBillingAddress['mobile']);
 			$objMember->fax					= strval($arrBillingAddress['fax']);
-			$objMember->email				= strval($arrBillingAddress['email']);
+			$objMember->email				= strval($strUsername);
 			$objMember->groups				= serialize(deserialize($objConfig->createMember_groups, true));
 			$objMember->login				= 1;
 			$objMember->loginCount 			= 3;
