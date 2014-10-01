@@ -66,7 +66,7 @@ class CreateMember extends \Frontend
 				//Check whether the username/email exists
 				$m = \MemberModel::getTable();
                 $objUnique = \MemberModel::findOneBy(array("LCASE($m.username)=LCASE(?) OR LCASE($m.email)=LCASE(?)"), array($strUsername, $strUsername));
-                $strUsername = $objUnique === null ? $strUsername : $strUsername.rand(1000, 9999);
+                $strUsername = $objUnique === null ? $strUsername : 'user'.rand(1000, 9999).$strUsername;
                 
 				$objMember->username = $strUsername;
 				$objMember->password = \Encryption::encrypt($this->createRandomPassword());
@@ -82,12 +82,12 @@ class CreateMember extends \Frontend
 			$objMember->street 				= strval($arrBillingAddress['street_1']);
 			$objMember->postal				= strval($arrBillingAddress['postal']);
 			$objMember->city				= strval($arrBillingAddress['city']);
-			$objMember->state				= strlen($arrBillingAddress['subdivision']) >= 5 ? substr($arrBillingAddress['subdivision'], 3) : '';
+			$objMember->state				= strlen(strval($arrBillingAddress['subdivision'])) >= 4 ? substr($arrBillingAddress['subdivision'], 3) : '';
 			$objMember->country				= strval($arrBillingAddress['country']);
 			$objMember->phone				= strval($arrBillingAddress['phone']);
 			$objMember->mobile				= strval($arrBillingAddress['mobile']);
 			$objMember->fax					= strval($arrBillingAddress['fax']);
-			$objMember->email				= strval($strUsername);
+			$objMember->email				= strval($arrBillingAddress['email']);
 			$objMember->groups				= serialize(deserialize($objConfig->createMember_groups, true));
 			$objMember->login				= 1;
 			$objMember->loginCount 			= 3;
