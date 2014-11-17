@@ -145,7 +145,7 @@ var IsotopeXCheckout = (function() {
 		var doRequest = true;
 		
 		doRequest = billingadd ? checkMandatoryFields(billingadd, true) : doRequest;
-		doRequest = shippingadd ? checkMandatoryFields(shippingadd, true) : doRequest;
+		//doRequest = shippingadd ? checkMandatoryFields(shippingadd, true) : doRequest;
 		
 		if (!doRequest || isSending) return;
 		
