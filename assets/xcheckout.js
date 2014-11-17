@@ -158,11 +158,44 @@ var IsotopeXCheckout = (function() {
 	}
 	
 	
+	// todo: test in all browsers
 	function checkMandatoryFields(field, runAllInputs)
 	{
-		var valid = true, j, k;
-				
-		return valid;
+		// Just do billing address for now
+		var billingInputs = field.getElementsByTagName('input');
+		var billingSelects = field.getElementsByTagName('select');
+		
+		for (var i = 0; i < billingInputs.length; i++)
+		{
+			if ((' ' + billingInputs[i].className + ' ').indexOf(' mandatory ') == -1)
+			{
+				continue;
+			}
+			
+			if ((' ' + billingInputs[i].className + ' ').indexOf(' text ') > -1)
+			{
+				if (billingInputs[i].value.trim() == '')
+				{
+					return false;
+				}
+			}
+		}
+		
+		for (var i = 0; i < billingSelects.length; i++)
+		{
+			if ((' ' + billingSelects[i].className + ' ').indexOf(' mandatory ') == -1)
+			{
+				continue;
+			}
+			
+			var selected = billingSelects[i];
+			if (!selected || selected.value.trim() == '')
+			{
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 
